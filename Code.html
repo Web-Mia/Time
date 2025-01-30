@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <style>
+.centerio {
+  text-align: center;
+  font-family: Sans-serif;
+  font-size: 25px;
+  margin: 30px;
+}
+</style>
+<div class="centerio">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script>
+      const apiUrl = "https://api.sunrise-sunset.org/json?lat=56.339775&lng=-2.788835&formatted=0";
+
+      function updateTimer() {
+        fetch(apiUrl)
+          .then(response => response.json())
+          .then(data => {
+            const sunrise = moment(data.results.sunrise);
+            const now = moment();
+            const duration = moment.duration(now.diff(sunrise));
+            const hours = duration.hours().toString().padStart(2, "0");
+            const minutes = duration.minutes().toString().padStart(2, "0");
+            const formattedTime = `${hours}:${minutes}`;
+            document.getElementById("timer").textContent = formattedTime;
+          })
+          .catch(error => {
+            console.error(error);
+            document.getElementById("timer").textContent = "00:00";
+          });
+      }
+
+      window.onload = function() {
+        updateTimer();
+        setInterval(updateTimer, 1000);
+      };
+    </script>
+  </head>
+  <body>
+    <span>Time – </span> <span id="timer">00:00</span>
+  </body>
+  </div>
+</html>
