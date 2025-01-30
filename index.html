@@ -1,45 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cambridge Sunrise Time</title>
+  
+  <!-- Include Moment.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  
+  <!-- Include Moment Timezone Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.40/moment-timezone-with-data.min.js"></script>
+  
   <style>
-.centerio {
-  text-align: center;
-  font-family: Sans-serif;
-  font-size: 25px;
-  margin: 30px;
-}
-</style>
-<div class="centerio">
-  <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script>
-      const apiUrl = "https://api.sunrise-sunset.org/json?lat=52.2000000&lng=0.1166700&formatted=0";
-      
-      function updateTimer() {
-        fetch(apiUrl)
-          .then(response => response.json())
-          .then(data => {
-            const sunrise = moment(data.results.sunrise);
-            const now = moment();
-            const duration = moment.duration(now.diff(sunrise));
-            const hours = duration.hours().toString().padStart(2, "0");
-            const minutes = duration.minutes().toString().padStart(2, "0");
-            const formattedTime = `${hours}:${minutes}`;
-            document.getElementById("timer").textContent = formattedTime;
-          })
-          .catch(error => {
-            console.error(error);
-            document.getElementById("timer").textContent = "00:00";
-          });
-      }
-
-      window.onload = function() {
-        updateTimer();
-        setInterval(updateTimer, 1000);
-      };
-    </script>
-  </head>
-  <body>
-    <span>Time – </span> <span id="timer">00:00</span>
-  </body>
+    .centerio {
+      text-align: center;
+      font-family: Sans-serif;
+      font-size: 25px;
+      margin: 30px;
+    }
+  </style>
+  
+  <script>
+    // API URL with Cambridge coordinates
+    const apiUrl = "https://api.sunrise-sunset.org/json?lat=52.2000000&lng=0.1166700&formatted=0";
+    
+    // Function to fetch and display sunrise time
+    function displaySunriseTime() {
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          // Parse sunrise time in UTC
+          const sunriseUTC = moment.utc(data.results.sunrise);
+          
+          // Convert UTC to Cambridge local time
+          const sunriseLocal = sunriseUTC.tz("Europe/London");
+          
+          // Format sunrise time (e.g., 06:12 AM)
+          const formattedSunrise = sunriseLocal.format("hh:mm A");
+          
+          // Display the formatted sunrise time
+          document.getElementById("sunrise").textContent = formattedSunrise;
+        })
+        .catch(error => {
+          console.error("Error fetching sunrise time:", error);
+          document.getElementById("sunrise").textContent = "Unavailable";
+        });
+    }
+    
+    // Execute the function on page load
+    window.onload = displaySunriseTime;
+  </script>
+</head>
+<body>
+  <div class="centerio">
+    <span>Sunrise – </span> 
+    <span id="sunrise">Loading...</span>
   </div>
+</body>
 </html>
